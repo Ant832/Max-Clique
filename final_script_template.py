@@ -31,16 +31,13 @@ def feige(adj, num_samples=None):
     if n == 0:
         return (0.0, 0, set())
 
-    # 1) compute the theoretical r, guard against log‑errors
     try:
         raw_r = math.floor(math.log(n) / (2 * math.log(math.log(n))))
     except ValueError:
         raw_r = 1
     r = max(1, raw_r)
-    # clamp to at most n (so we can always sample at least once)
     r = min(r, n)
 
-    # 2) peel low‑degree vertices
     G = {v: set(neigh) for v, neigh in adj.items()}
     for _ in range(r):
         m = len(G)
@@ -58,7 +55,6 @@ def feige(adj, num_samples=None):
             for u in G:
                 G[u].discard(v)
 
-    # if peeling shrank us below r, clamp r down so the loop can run
     m = len(G)
     if m < r:
         r = max(1, m)
@@ -69,7 +65,7 @@ def feige(adj, num_samples=None):
 
     best_clique = set()
 
-    # 3) sample & grow
+
     for _ in range(num_samples):
         if len(V) < r:
             break
@@ -79,7 +75,6 @@ def feige(adj, num_samples=None):
         while added:
             added = False
             for v in V:
-                # only add v if it remains a clique member
                 if v not in C and all(v in G[u] for u in C):
                     C.add(v)
                     added = True
@@ -88,9 +83,7 @@ def feige(adj, num_samples=None):
 
     elapsed = time.time() - start
 
-    # 4) fallback to a singleton clique if we never found anything
     if not best_clique:
-        # pick the highest‑degree vertex from the original graph
         v0 = max(adj, key=lambda x: len(adj[x]))
         best_clique = {v0}
 
@@ -148,8 +141,8 @@ def main():
 
 	#store algorithms and test graphs in iterable containers
 	algorithms = [
-		BronKerbosch,
-		Tomita,
+		# BronKerbosch,
+		# Tomita,
 		feige
 	]
 	graphs = [
