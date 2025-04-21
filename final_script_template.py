@@ -1,4 +1,7 @@
+import math
 import time
+from random import random
+
 
 def parseEdges(filename):
 	#returns a structure suitable for the algorithms
@@ -21,6 +24,77 @@ def parseEdges(filename):
 				graph[b].add(a)
 
 	return graph
+def feige(adj, num_samples=None):
+    print("running the Feige algorithm")
+    start = time.time()
+    n = len(adj)
+    if n == 0:
+        return (0.0, 0, set())
+
+    # 1) compute the theoretical r, guard against log‑errors
+    try:
+        raw_r = math.floor(math.log(n) / (2 * math.log(math.log(n))))
+    except ValueError:
+        raw_r = 1
+    r = max(1, raw_r)
+    # clamp to at most n (so we can always sample at least once)
+    r = min(r, n)
+
+    # 2) peel low‑degree vertices
+    G = {v: set(neigh) for v, neigh in adj.items()}
+    for _ in range(r):
+        m = len(G)
+        if m < 2:
+            break
+        try:
+            thresh = m / math.log(math.log(m))
+        except ValueError:
+            break
+        to_remove = [v for v, neigh in G.items() if len(neigh) < thresh]
+        if not to_remove:
+            break
+        for v in to_remove:
+            G.pop(v, None)
+            for u in G:
+                G[u].discard(v)
+
+    # if peeling shrank us below r, clamp r down so the loop can run
+    m = len(G)
+    if m < r:
+        r = max(1, m)
+
+    V = list(G)
+    if num_samples is None:
+        num_samples = n
+
+    best_clique = set()
+
+    # 3) sample & grow
+    for _ in range(num_samples):
+        if len(V) < r:
+            break
+        S = set(random.sample(V, r))
+        C = set(S)
+        added = True
+        while added:
+            added = False
+            for v in V:
+                # only add v if it remains a clique member
+                if v not in C and all(v in G[u] for u in C):
+                    C.add(v)
+                    added = True
+        if len(C) > len(best_clique):
+            best_clique = C
+
+    elapsed = time.time() - start
+
+    # 4) fallback to a singleton clique if we never found anything
+    if not best_clique:
+        # pick the highest‑degree vertex from the original graph
+        v0 = max(adj, key=lambda x: len(adj[x]))
+        best_clique = {v0}
+
+    return (elapsed, len(best_clique), best_clique)
 
 def Tomita(graph):
 	Tomita.graph = graph
@@ -75,7 +149,8 @@ def main():
 	#store algorithms and test graphs in iterable containers
 	algorithms = [
 		BronKerbosch,
-		Tomita
+		Tomita,
+		feige
 	]
 	graphs = [
 		parseEdges("edges1.txt"),
