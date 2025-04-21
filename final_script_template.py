@@ -102,7 +102,7 @@ def Tomita(graph):
             Tomita.clique = R
         else:
             if P or X:
-                Pivot_u = max(P.union(X), key=lambda vertex: len(P.intersection(Tomita.graph[vertex])), default=None)
+                Pivot_u = max(P.union(X), key=lambda vertex: len(P.intersection(Tomita.graph[vertex])))
                 for v in P - Tomita.graph[Pivot_u]:
                     rec_Tomita(
                         R.union({v}),
@@ -145,14 +145,14 @@ def main():
 
     #store algorithms and test graphs in iterable containers
     algorithms = [
-        BronKerbosch,
+        # BronKerbosch,
         Tomita,
-        feige
+        # feige
     ]
     graphs = [
         parseEdges("edges1.txt"),
         parseEdges("edges2.txt"),
-        # parseEdges("google_graph.txt")
+        parseEdges("google_graph.txt")
     ]
 
     #run every algorithm on every test graph
