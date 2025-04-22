@@ -28,77 +28,82 @@ def parseEdges(filename):
     return graph
 
 
-def feige(adj, num_samples=None):
-    print("running the Feige algorithm")
-    start = time.time()
-    n = len(adj)
-    if n == 0:
-        return (0.0, 0, set())
+def Feige(adj, num_samples=None):
+    global num_runs
 
-    try:
-        raw_r = math.floor(math.log(n) / (2 * math.log(math.log(n))))
-    except ValueError:
-        raw_r = 1
-    r = max(1, raw_r)
-    r = min(r, n)
+    print("running the Feige method", num_runs, "times")
+    average_time = 0
 
-    G = {v: set(neigh) for v, neigh in adj.items()}
-    for _ in range(r):
+    for i in range(num_runs):
+        start = time.time()
+        n = len(adj)
+        if n == 0:
+            return (0.0, 0, set())
+
+        try:
+            raw_r = math.floor(math.log(n) / (2 * math.log(math.log(n))))
+        except ValueError:
+            raw_r = 1
+        r = max(1, raw_r)
+        r = min(r, n)
+
+        G = {v: set(neigh) for v, neigh in adj.items()}
+        for _ in range(r):
+            m = len(G)
+            if m < 3:
+                break
+            llm = math.log(math.log(m))
+            if llm <= 0:
+                break
+            thresh = m / llm
+            if thresh >= m:
+                break
+            to_remove = [v for v, neigh in G.items() if len(neigh) < thresh]
+            if not to_remove:
+                break
+            for v in to_remove:
+                G.pop(v, None)
+                for u in G:
+                    G[u].discard(v)
+
+        # 3. clamp r to |G|
         m = len(G)
-        if m < 3:
-            break
-        llm = math.log(math.log(m))
-        if llm <= 0:
-            break
-        thresh = m / llm
-        if thresh >= m:
-            break
-        to_remove = [v for v, neigh in G.items() if len(neigh) < thresh]
-        if not to_remove:
-            break
-        for v in to_remove:
-            G.pop(v, None)
-            for u in G:
-                G[u].discard(v)
+        if m < r:
+            r = max(1, m)
 
-    # 3. clamp r to |G|
-    m = len(G)
-    if m < r:
-        r = max(1, m)
+        V = list(G)
+        if num_samples is None:
+            num_samples = n
 
-    V = list(G)
-    if num_samples is None:
-        num_samples = n
+        best_clique = set()
+        for _ in range(num_samples):
+            if len(V) < r:
+                break
+            S = set(random.sample(V, r))
+            C = set(S)
+            added = True
+            while added:
+                added = False
+                for v in V:
+                    if v not in C and all(v in G[u] for u in C):
+                        C.add(v)
+                        added = True
+            if len(C) > len(best_clique):
+                best_clique = C
 
-    best_clique = set()
-    for _ in range(num_samples):
-        if len(V) < r:
-            break
-        S = set(random.sample(V, r))
-        C = set(S)
-        added = True
-        while added:
-            added = False
-            for v in V:
-                if v not in C and all(v in G[u] for u in C):
-                    C.add(v)
-                    added = True
-        if len(C) > len(best_clique):
-            best_clique = C
+        average_time += time.time() - start
 
-    elapsed = time.time() - start
+        if not best_clique:
+            v0 = max(adj, key=lambda x: len(adj[x]))
+            best_clique = {v0}
 
-    if not best_clique:
-        v0 = max(adj, key=lambda x: len(adj[x]))
-        best_clique = {v0}
-
-    return (elapsed, len(best_clique), best_clique)
+    return (average_time / num_runs, len(best_clique), best_clique)
 
 
 def Tomita(graph):
     Tomita.graph = graph
     Tomita.clique = set()
-    print("running the Tomita method")
+    print("running the Tomita method", num_runs, "times")
     def rec_Tomita(R, P, X):
         if len(P) + len(X) == 0 and len(Tomita.clique) < len(R):
             Tomita.clique = R
@@ -113,11 +118,14 @@ def Tomita(graph):
                     )
                     P.remove(v)
                     X.add(v)
-    start_time = time.time()
-    rec_Tomita(set(), set(graph), set())
-    end_time = time.time()
+    average_time = 0
+    for i in range(num_runs):
+        start_time = time.time()
+        rec_Tomita(set(), set(graph), set())
+        average_time += time.time() - start_time
 
-    return (end_time - start_time, len(Tomita.clique), Tomita.clique)
+
+    return (average_time / num_runs, len(Tomita.clique), Tomita.clique)
 
 def BronKerbosch(graph):
     global num_runs
@@ -141,8 +149,7 @@ def BronKerbosch(graph):
     for i in range(num_runs):
         start_time = time.time()
         rec_BronKerbosch(set(), set(graph), set())
-        end_time = time.time()
-        average_time += end_time - start_time
+        average_time += time.time() - start_time
 
 
     return (average_time / num_runs, len(BronKerbosch.clique), BronKerbosch.clique)
@@ -152,13 +159,13 @@ def main():
     #store algorithms and test graphs in iterable containers
     algorithms = [
         BronKerbosch,
-        # Tomita,
-        # feige
+        Tomita,
+        Feige
     ]
     graphs = [
         parseEdges("edges1.txt"),
         parseEdges("edges2.txt"),
-        # parseEdges("google_graph.txt")
+        parseEdges("google_graph.txt")
     ]
 
     print()
@@ -172,7 +179,7 @@ def main():
 
         for algorithm in algorithms:
             result = algorithm(graph)
-            print("+   secs elapsed: " + str(result[0]))
+            print("+   average time: " + str(result[0]))
             if(result[1] < 15):
                 print("+   result set:   " + str(result[2]))
             else:
