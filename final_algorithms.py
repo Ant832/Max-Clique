@@ -165,7 +165,8 @@ def main():
     graphs = [
         parseEdges("edges1.txt"),
         parseEdges("edges2.txt"),
-        parseEdges("google_graph.txt")
+        parseEdges("edges3.txt"),
+        parseEdges("edges4.txt")
     ]
 
     print()
