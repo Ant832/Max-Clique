@@ -35,7 +35,7 @@ def Feige(adj, num_samples=None):
     average_time = 0
 
     for i in range(num_runs):
-        start = time.time()
+        start = time.perf_counter()
         n = len(adj)
         if n == 0:
             return (0.0, 0, set())
@@ -91,7 +91,7 @@ def Feige(adj, num_samples=None):
             if len(C) > len(best_clique):
                 best_clique = C
 
-        average_time += time.time() - start
+        average_time += time.perf_counter() - start
 
         if not best_clique:
             v0 = max(adj, key=lambda x: len(adj[x]))
@@ -120,9 +120,9 @@ def Tomita(graph):
                     X.add(v)
     average_time = 0
     for i in range(num_runs):
-        start_time = time.time()
+        start_time = time.perf_counter()
         rec_Tomita(set(), set(graph), set())
-        average_time += time.time() - start_time
+        average_time += time.perf_counter() - start_time
 
 
     return (average_time / num_runs, len(Tomita.clique), Tomita.clique)
@@ -147,9 +147,9 @@ def BronKerbosch(graph):
                 X.add(v)
     average_time = 0
     for i in range(num_runs):
-        start_time = time.time()
+        start_time = time.perf_counter()
         rec_BronKerbosch(set(), set(graph), set())
-        average_time += time.time() - start_time
+        average_time += time.perf_counter() - start_time
 
 
     return (average_time / num_runs, len(BronKerbosch.clique), BronKerbosch.clique)
