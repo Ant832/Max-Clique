@@ -2,10 +2,12 @@ import math
 import time
 import random
 
+num_runs = 5
 
 def parseEdges(filename):
     #returns a structure suitable for the algorithms
 
+    print("importing edges from", filename)
     graph = dict()
     with open(filename, 'r') as f:
         for line in f.readlines():
@@ -118,9 +120,11 @@ def Tomita(graph):
     return (end_time - start_time, len(Tomita.clique), Tomita.clique)
 
 def BronKerbosch(graph):
+    global num_runs
+
     BronKerbosch.graph = graph
     BronKerbosch.clique = set()
-    print("running the BronKerbosch method")
+    print("running the BronKerbosch method", num_runs, "times")
     def rec_BronKerbosch(R, P, X):
         if len(P) + len(X) == 0 and len(BronKerbosch.clique) < len(R):
             BronKerbosch.clique = R
@@ -133,27 +137,33 @@ def BronKerbosch(graph):
                 )
                 P.remove(v)
                 X.add(v)
-    start_time = time.time()
-    rec_BronKerbosch(set(), set(graph), set())
-    end_time = time.time()
+    average_time = 0
+    for i in range(num_runs):
+        start_time = time.time()
+        rec_BronKerbosch(set(), set(graph), set())
+        end_time = time.time()
+        average_time += end_time - start_time
 
-    return (end_time - start_time, len(BronKerbosch.clique), BronKerbosch.clique)
+
+    return (average_time / num_runs, len(BronKerbosch.clique), BronKerbosch.clique)
 
 def main():
-    print("Running clique algorithms...")
-    print()
 
     #store algorithms and test graphs in iterable containers
     algorithms = [
-        # BronKerbosch,
-        Tomita,
+        BronKerbosch,
+        # Tomita,
         # feige
     ]
     graphs = [
         parseEdges("edges1.txt"),
         parseEdges("edges2.txt"),
-        parseEdges("google_graph.txt")
+        # parseEdges("google_graph.txt")
     ]
+
+    print()
+    print("Running clique algorithms...")
+    print()
 
     #run every algorithm on every test graph
     for graph in graphs:
