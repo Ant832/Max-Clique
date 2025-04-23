@@ -229,7 +229,7 @@ def main():
         "edges4.txt"
     ]
     for i in range(len(graphs)):
-	    graphs[i] = (graphs[i], parseEdges(graphs[i]))
+        graphs[i] = (graphs[i], parseEdges(graphs[i]))
 
     print()
     print("Running clique algorithms...")
