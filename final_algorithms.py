@@ -4,6 +4,66 @@ import random
 
 num_runs = 5
 
+'''
+THE WORK OF ANTHONY JANKOVIC, ENOCH GILLMAN, AND KALE GUYMON
+
+---EXPECTED OUTPUT---
+Running clique algorithms...
+
+edges from edges1.txt...
+graph with 5 nodes
++
+running the BronKerbosch method 5 times
++   average time: 1.4829599967924878e-05
++   result set:   {2, 3, 4}
+running the Tomita method 5 times
++   average time: 1.1447400174802169e-05
++   result set:   {2, 3, 4}
+running the Feige method 5 times
++   average time: 3.809359986917116e-05
++   result set:   {2, 4, 5}
+
+edges from edges2.txt...
+graph with 7 nodes
++
+running the BronKerbosch method 5 times
++   average time: 2.7436998789198696e-05
++   result set:   {4, 5, 6, 7}
+running the Tomita method 5 times
++   average time: 2.3102999693946914e-05
++   result set:   {4, 5, 6, 7}
+running the Feige method 5 times
++   average time: 4.914160017506219e-05
++   result set:   {1, 4, 6}
+
+edges from edges3.txt...
+graph with 2000 nodes
++
+running the BronKerbosch method 5 times
++   average time: 2.1320804190007037
++   result set:   {576, 1954, 1027, 1667, 1396, 6}
+running the Tomita method 5 times
++   average time: 3.6336486912005057
++   result set:   {576, 1954, 1027, 1667, 1396, 6}
+running the Feige method 5 times
++   average time: 0.15164649580037803
++   result set:   {1831}
+
+edges from edges4.txt...
+graph with 4000 nodes
++
+running the BronKerbosch method 5 times
++   average time: 9.867383589800738
++   result set:   {3760, 2, 1042, 793, 1531, 1197}
+running the Tomita method 5 times
++   average time: 16.924468040799546
++   result set:   {3760, 2, 1042, 793, 1531, 1197}
+running the Feige method 5 times
++   average time: 0.8244569213995419
++   result set:   {2383}
+
+'''
+
 def parseEdges(filename):
     #returns a structure suitable for the algorithms
 
@@ -163,19 +223,21 @@ def main():
         Feige
     ]
     graphs = [
-        parseEdges("edges1.txt"),
-        parseEdges("edges2.txt"),
-        parseEdges("edges3.txt"),
-        parseEdges("edges4.txt")
+        "edges1.txt",
+        "edges2.txt",
+        "edges3.txt",
+        "edges4.txt"
     ]
+    for i in range(len(graphs)):
+	    graphs[i] = (graphs[i], parseEdges(graphs[i]))
 
     print()
     print("Running clique algorithms...")
     print()
 
     #run every algorithm on every test graph
-    for graph in graphs:
-        print(f"graph with {len(graph)} nodes")
+    for name, graph in graphs:
+        print(f"edges from {name}...\ngraph with {len(graph)} nodes")
         print("+")
 
         for algorithm in algorithms:
