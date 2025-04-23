@@ -94,7 +94,7 @@ def Feige(adj, num_samples=None):
     print("running the Feige method", num_runs, "times")
     average_time = 0
 
-    for i in range(num_runs):
+    for _ in range(num_runs):
         start = time.perf_counter()
         n = len(adj)
         if n == 0:
@@ -179,7 +179,7 @@ def Tomita(graph):
                     P.remove(v)
                     X.add(v)
     average_time = 0
-    for i in range(num_runs):
+    for _ in range(num_runs):
         start_time = time.perf_counter()
         rec_Tomita(set(), set(graph), set())
         average_time += time.perf_counter() - start_time
@@ -206,7 +206,7 @@ def BronKerbosch(graph):
                 P.remove(v)
                 X.add(v)
     average_time = 0
-    for i in range(num_runs):
+    for _ in range(num_runs):
         start_time = time.perf_counter()
         rec_BronKerbosch(set(), set(graph), set())
         average_time += time.perf_counter() - start_time
