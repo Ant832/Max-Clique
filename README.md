@@ -1,17 +1,30 @@
 # Max-Clique Problem
-TODO
+The Max-Clique returns the maximum clique in a given undirected graph G(V, E), 
+where V represents a set of vertices and E represents a set of undirected edges
+A clique is a subset of nodes in G in which every node is interconnected.
 
 ## Mathematical Context
-TODO
+The Clique problem is applied in real world settings that involve
+graph data and the problem of finding closely interacting nodes.
+Cliques are used in social networks to find mutual friends, to bioinformatics
+to infer protein structures. There are many applications in which cliques
+may be applied.
 
 ## Featured Algorithms:
 Two correct algorithms and one approximating algorithm were found
 ### BronKerbosch
-TODO
+The BronKerbosch algortithm finds all maximal cliques in an undirected graph
+via recursive backtracking. Given that any n-vertex graph has at most 3^(n/3) maximal cliques,
+BronKerbosch will find each and have a running time of O(3^(n/3))
 ### Tomita
-TODO
+The Tomita algorithm adds a pivot method to BronKerbosch which eliminates neighbors
+of a pivot vertex to more quickly backtrack in branches of the search that do not contain
+maximal cliques. The running time is still O(3^(n/3)), but is much faster in practice
+due to the option of reduced branching.
 ### Feige
-TODO
+Feige approximates a clique in a graph in polynomial time. It is a reduction
+of the SAT problem and checks if two vertices are consisten with each other in
+a clique. The running time for Feige is O(n(log log n)^(2)/log^(3)n).
 
 ## References
 References 
