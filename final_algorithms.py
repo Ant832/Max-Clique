@@ -8,59 +8,7 @@ num_runs = 5
 THE WORK OF ANTHONY JANKOVIC, ENOCH GILLMAN, AND KALE GUYMON
 
 ---EXPECTED OUTPUT---
-Running clique algorithms...
-
-edges from edges1.txt...
-graph with 5 nodes
-+
-running the BronKerbosch method 5 times
-+   average time: 1.4829599967924878e-05
-+   result set:   {2, 3, 4}
-running the Tomita method 5 times
-+   average time: 1.1447400174802169e-05
-+   result set:   {2, 3, 4}
-running the Feige method 5 times
-+   average time: 3.809359986917116e-05
-+   result set:   {2, 4, 5}
-
-edges from edges2.txt...
-graph with 7 nodes
-+
-running the BronKerbosch method 5 times
-+   average time: 2.7436998789198696e-05
-+   result set:   {4, 5, 6, 7}
-running the Tomita method 5 times
-+   average time: 2.3102999693946914e-05
-+   result set:   {4, 5, 6, 7}
-running the Feige method 5 times
-+   average time: 4.914160017506219e-05
-+   result set:   {1, 4, 6}
-
-edges from edges3.txt...
-graph with 2000 nodes
-+
-running the BronKerbosch method 5 times
-+   average time: 2.1320804190007037
-+   result set:   {576, 1954, 1027, 1667, 1396, 6}
-running the Tomita method 5 times
-+   average time: 3.6336486912005057
-+   result set:   {576, 1954, 1027, 1667, 1396, 6}
-running the Feige method 5 times
-+   average time: 0.15164649580037803
-+   result set:   {1831}
-
-edges from edges4.txt...
-graph with 4000 nodes
-+
-running the BronKerbosch method 5 times
-+   average time: 9.867383589800738
-+   result set:   {3760, 2, 1042, 793, 1531, 1197}
-running the Tomita method 5 times
-+   average time: 16.924468040799546
-+   result set:   {3760, 2, 1042, 793, 1531, 1197}
-running the Feige method 5 times
-+   average time: 0.8244569213995419
-+   result set:   {2383}
+TODO (once we finish everything)
 
 '''
 
@@ -214,13 +162,47 @@ def BronKerbosch(graph):
 
     return (average_time / num_runs, len(BronKerbosch.clique), BronKerbosch.clique)
 
+def SkipClique(graph):
+    global num_runs
+
+    SkipClique.graph = graph
+    SkipClique.clique = set()
+    SkipClique.hop_reset = int(pow(len(graph), 1.5)) + 1
+    SkipClique.hops = SkipClique.hop_reset
+    print("running the SkipClique method", num_runs, "times")
+    def rec_SkipClique(R, P, X):
+        SkipClique.hops -= 1
+        if len(P) + len(X) == 0 and len(SkipClique.clique) < len(R):
+            SkipClique.clique = R
+            SkipClique.hops = SkipClique.hop_reset
+        elif(0 < SkipClique.hops):
+            for v in list(P):
+                rec_SkipClique(
+                    R.union({v}),
+                    P.intersection(SkipClique.graph[v]),
+                    X.intersection(SkipClique.graph[v])
+                )
+                P.remove(v)
+                X.add(v)
+        else:
+                SkipClique.hops += 1
+    average_time = 0
+    for _ in range(num_runs):
+        start_time = time.perf_counter()
+        rec_SkipClique(set(), set(graph), set())
+        average_time += time.perf_counter() - start_time
+
+
+    return (average_time / num_runs, len(SkipClique.clique), SkipClique.clique)
+
 def main():
 
     #store algorithms and test graphs in iterable containers
     algorithms = [
         BronKerbosch,
         Tomita,
-        Feige
+        Feige,
+        SkipClique
     ]
     graphs = [
         "edges1.txt",
