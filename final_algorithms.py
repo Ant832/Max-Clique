@@ -8,7 +8,84 @@ num_runs = 5
 THE WORK OF ANTHONY JANKOVIC, ENOCH GILLMAN, AND KALE GUYMON
 
 ---EXPECTED OUTPUT---
-TODO (once we finish everything)
+Running clique algorithms...
+
+edges from edges1.txt...
+graph with 5 nodes
++
+running the BronKerbosch method 5 times
++   average time: 5.437119980342686e-05
++   result set:   {2, 3, 4}
+running the Tomita method 5 times
++   average time: 4.94563952088356e-05
++   result set:   {2, 3, 4}
+running the Feige method 5 times
++   average time: 9.60260076681152e-05
++   result set:   {2, 3, 4}
+running the SkipClique method 5 times
++   average time: 2.124280435964465e-05
++   result set:   {2, 3, 4}
+running the SkipClique2 method 5 times
++   average time: 2.778779889922589e-05
++   result set:   {2, 3, 4}
+
+edges from edges2.txt...
+graph with 7 nodes
++
+running the BronKerbosch method 5 times
++   average time: 8.88623995706439e-05
++   result set:   {4, 5, 6, 7}
+running the Tomita method 5 times
++   average time: 7.667779864277691e-05
++   result set:   {4, 5, 6, 7}
+running the Feige method 5 times
++   average time: 0.0002039539976976812
++   result set:   {4, 5}
+running the SkipClique method 5 times
++   average time: 3.605099918786436e-05
++   result set:   {4, 5, 6, 7}
+running the SkipClique2 method 5 times
++   average time: 5.939459661021829e-05
++   result set:   {4, 5, 6, 7}
+
+edges from edges3.txt...
+graph with 2000 nodes
++
+running the BronKerbosch method 5 times
++   average time: 6.561483272994519
++   result set:   {576, 1954, 1027, 1667, 1396, 6}
+running the Tomita method 5 times
++   average time: 10.045611928400467
++   result set:   {576, 1954, 1027, 1667, 1396, 6}
+running the Feige method 5 times
++   average time: 0.44870671498938464
++   result set:   {1495, 1174, 1831}
+running the SkipClique method 5 times
++   average time: 0.11966646639921237
++   result set:   {576, 1954, 1027, 1667, 1396, 6}
+running the SkipClique2 method 5 times
++   average time: 0.21536145739955828
++   result set:   {576, 1954, 1027, 1667, 1396, 6}
+
+edges from edges4.txt...
+graph with 4000 nodes
++
+running the BronKerbosch method 5 times
++   average time: 28.49627088320267
++   result set:   {3760, 2, 1042, 793, 1531, 1197}
+running the Tomita method 5 times
++   average time: 45.05748925039952
++   result set:   {3760, 2, 1042, 793, 1531, 1197}
+running the Feige method 5 times
++   average time: 0.08395806299813557
++   result set:   {2946, 1443, 2383, 2582, 2909}
+running the SkipClique method 5 times
++   average time: 0.13447227839787956
++   result set:   {3760, 2, 1042, 793, 1531, 1197}
+running the SkipClique2 method 5 times
++   average time: 0.2291649414022686
++   result set:   {3760, 2, 1042, 793, 1531, 1197}
+
 
 '''
 
