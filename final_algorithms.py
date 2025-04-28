@@ -36,58 +36,68 @@ def parseEdges(filename):
     return graph
 
 
-def Feige(adj, num_samples=None):
-    global num_runs
+import time, math, random
 
-    print("running the Feige method", num_runs, "times")
-    average_time = 0
+def Feige(adj, num_runs=1, num_samples=None):
+    print("running the Feige method 5 times")
+    n = len(adj)
+    if n == 0:
+        return (0.0, 0, set())
 
-    for _ in range(num_runs):
-        start = time.perf_counter()
-        n = len(adj)
-        if n == 0:
-            return (0.0, 0, set())
+    if num_samples is None:
+        num_samples = n
 
-        try:
-            raw_r = math.floor(math.log(n) / (2 * math.log(math.log(n))))
-        except ValueError:
-            raw_r = 1
-        r = max(1, raw_r)
-        r = min(r, n)
+    try:
+        raw_r = math.floor(math.log(n) / (2 * math.log(math.log(n))))
+    except ValueError:
+        raw_r = 1
+    r = max(1, min(raw_r, n))
 
-        G = {v: set(neigh) for v, neigh in adj.items()}
-        for _ in range(r):
-            m = len(G)
-            if m < 3:
-                break
-            llm = math.log(math.log(m))
-            if llm <= 0:
-                break
-            thresh = m / llm
-            if thresh >= m:
-                break
-            to_remove = [v for v, neigh in G.items() if len(neigh) < thresh]
-            if not to_remove:
-                break
-            for v in to_remove:
-                G.pop(v, None)
-                for u in G:
-                    G[u].discard(v)
+    total_time = 0.0
+    best_overall = set()
 
-        # 3. clamp r to |G|
+    def greedy_fallback(adj):
+        v0 = max(adj, key=lambda v: len(adj[v]))
+        C = {v0}
+        for u in sorted(adj[v0], key=lambda w: len(adj[w]), reverse=True):
+            if all(u in adj[w] for w in C):
+                C.add(u)
+        return C
+
+    start = time.perf_counter()
+
+    G = {v: set(neigh) for v, neigh in adj.items()}
+    for _ in range(r):
         m = len(G)
-        if m < r:
-            r = max(1, m)
+        if m < 3:
+            break
+        llm = math.log(math.log(m))
+        if llm <= 0:
+            break
+        thresh = math.floor(m / (2 * llm))
+        if thresh < 2:
+            break
+
+        to_remove = [v for v, neigh in G.items() if len(neigh) < thresh]
+        if not to_remove:
+            break
+
+        for v in to_remove:
+            G.pop(v, None)
+        for neighs in G.values():
+            for v in to_remove:
+                neighs.discard(v)
+
+        m = len(G)
+        r_eff = min(r, max(1, m))
 
         V = list(G)
-        if num_samples is None:
-            num_samples = n
-
         best_clique = set()
+
         for _ in range(num_samples):
-            if len(V) < r:
+            if len(V) < r_eff:
                 break
-            S = set(random.sample(V, r))
+            S = set(random.sample(V, r_eff))
             C = set(S)
             added = True
             while added:
@@ -99,13 +109,16 @@ def Feige(adj, num_samples=None):
             if len(C) > len(best_clique):
                 best_clique = C
 
-        average_time += time.perf_counter() - start
+        if len(best_clique) <= 1:
+            best_clique = greedy_fallback(adj)
 
-        if not best_clique:
-            v0 = max(adj, key=lambda x: len(adj[x]))
-            best_clique = {v0}
+        total_time += (time.perf_counter() - start)
 
-    return (average_time / num_runs, len(best_clique), best_clique)
+        if len(best_clique) > len(best_overall):
+            best_overall = best_clique
+
+    avg_time = total_time / num_runs
+    return (avg_time, len(best_overall), best_overall)
 
 
 def Tomita(graph):
