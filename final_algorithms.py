@@ -36,8 +36,6 @@ def parseEdges(filename):
     return graph
 
 
-import time, math, random
-
 def Feige(adj, num_runs=1, num_samples=None):
     print("running the Feige method 5 times")
     n = len(adj)
