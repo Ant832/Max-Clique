@@ -162,6 +162,43 @@ def BronKerbosch(graph):
 
     return (average_time / num_runs, len(BronKerbosch.clique), BronKerbosch.clique)
 
+def SkipClique2(graph):
+    global num_runs
+
+    SkipClique2.graph = graph
+    SkipClique2.clique = set()
+    SkipClique2.hop_reset = int(pow(len(graph), 1.5)) + 1
+    SkipClique2.hops = SkipClique2.hop_reset
+    print("running the SkipClique2 method", num_runs, "times")
+    def rec_SkipClique2(R, P, X):
+        SkipClique2.hops -= 1
+        if len(P) + len(X) == 0 and len(SkipClique2.clique) < len(R):
+            SkipClique2.clique = R
+            SkipClique2.hops = SkipClique2.hop_reset
+        elif(0 < SkipClique2.hops):
+            if P or X:
+                Pivot_u = max(P.union(X), key=lambda vertex: len(P.intersection(SkipClique2.graph[vertex])))
+                for v in P - SkipClique2.graph[Pivot_u]:
+                    rec_SkipClique2(
+                        R.union({v}),
+                        P.intersection(SkipClique2.graph[v]),
+                        X.intersection(SkipClique2.graph[v])
+                    )
+                    P.remove(v)
+                    X.add(v)
+        else:
+                SkipClique2.hops += 1
+    average_time = 0
+    for _ in range(num_runs):
+        start_time = time.perf_counter()
+        rec_SkipClique2(set(), set(graph), set())
+        average_time += time.perf_counter() - start_time
+
+
+    return (average_time / num_runs, len(SkipClique2.clique), SkipClique2.clique)
+
+
+
 def SkipClique(graph):
     global num_runs
 
@@ -202,7 +239,8 @@ def main():
         BronKerbosch,
         Tomita,
         Feige,
-        SkipClique
+        SkipClique,
+        SkipClique2
     ]
     graphs = [
         "edges1.txt",
