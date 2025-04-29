@@ -37,7 +37,7 @@ reset every time an improvement is made. This algorithm is O(TODO)
 
 
 ## References
-References 
+ 
 Feige, U. (2004). Approximating maximum clique by removing subgraphs. SIAM Journal on Discrete Mathematics, 18(2), 219–225. 
 
 Boppana, R.; Halldórsson, M. M. (1992), Approximating maximum independent sets by excluding subgraphs, BIT Numerical Mathematics, 32(2): 180–196. 
