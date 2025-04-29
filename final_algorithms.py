@@ -334,7 +334,8 @@ def main():
         "edges1.txt",
         "edges2.txt",
         "edges3.txt",
-        "edges4.txt"
+        "edges4.txt",
+        "edges5.txt",
     ]
     for i in range(len(graphs)):
         graphs[i] = (graphs[i], parseEdges(graphs[i]))
